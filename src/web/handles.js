@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Selection handles and transform system for Phomymo label designer
  * Provides resize corners/edges and rotation handle

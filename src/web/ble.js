@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Web Bluetooth transport for Phomymo
  *

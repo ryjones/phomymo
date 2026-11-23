@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Input Validation Utilities
  * Consistent validation across the application

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Element system for Phomymo label designer
  * Handles creation, manipulation, and hit testing of label elements

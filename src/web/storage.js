@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * localStorage persistence for Phomymo label designs
  */

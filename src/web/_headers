@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 # Cache control for Cloudflare Pages
 /index.html
   Cache-Control: no-cache, no-store, must-revalidate

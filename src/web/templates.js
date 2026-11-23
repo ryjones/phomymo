@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Template system for variable data printing
  * Handles field detection, substitution, and CSV parsing

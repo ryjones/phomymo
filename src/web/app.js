@@ -1,9 +1,12 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+
 /**
  * Phomymo Label Designer Application
  * Multi-element label editor with drag, resize, and rotate
  * v116
  */
 
+import { initNativeBridge } from './native.js?v=1';
 import { CanvasRenderer } from './canvas.js?v=115';
 import { BLETransport } from './ble.js?v=103';
 import { USBTransport } from './usb.js?v=101';
@@ -4865,24 +4868,7 @@ function handleSave() {
   const name = nameValidation.sanitized;
 
   try {
-    const designData = {
-      elements: state.elements,
-      labelSize: state.labelSize,
-    };
-
-    // Include template data if present
-    if (state.templateFields.length > 0) {
-      designData.isTemplate = true;
-      designData.templateFields = state.templateFields;
-    }
-    if (state.templateData.length > 0) {
-      designData.templateData = state.templateData;
-    }
-
-    // Include multi-label config if enabled
-    if (state.multiLabel.enabled) {
-      designData.multiLabel = { ...state.multiLabel };
-    }
+    const designData = serializeDesign();
 
     saveDesign(name, designData);
     hideSaveDialog();
@@ -4982,24 +4968,9 @@ function handleExport() {
   const exportData = {
     name: 'Untitled Design',
     version: 3, // Version 3 includes multi-label support
-    elements: state.elements,
-    labelSize: state.labelSize,
+    ...serializeDesign(),
     exportedAt: new Date().toISOString(),
   };
-
-  // Include template data if present
-  if (state.templateFields.length > 0) {
-    exportData.isTemplate = true;
-    exportData.templateFields = state.templateFields;
-  }
-  if (state.templateData.length > 0) {
-    exportData.templateData = state.templateData;
-  }
-
-  // Include multi-label config if enabled
-  if (state.multiLabel.enabled) {
-    exportData.multiLabel = { ...state.multiLabel };
-  }
 
   // Create and download file
   const jsonString = JSON.stringify(exportData, null, 2);
@@ -5261,7 +5232,34 @@ function getElementLabel(el) {
 }
 
 /**
- * Load a design
+ * Build the saveable form of the current design
+ * @returns {object} - { elements, labelSize, [isTemplate, templateFields, templateData, multiLabel] }
+ */
+function serializeDesign() {
+  const designData = {
+    elements: state.elements,
+    labelSize: state.labelSize,
+  };
+
+  // Include template data if present
+  if (state.templateFields.length > 0) {
+    designData.isTemplate = true;
+    designData.templateFields = state.templateFields;
+  }
+  if (state.templateData.length > 0) {
+    designData.templateData = state.templateData;
+  }
+
+  // Include multi-label config if enabled
+  if (state.multiLabel.enabled) {
+    designData.multiLabel = { ...state.multiLabel };
+  }
+
+  return designData;
+}
+
+/**
+ * Load a saved design by name
  */
 function handleLoad(name) {
   const design = loadDesign(name);
@@ -5270,6 +5268,15 @@ function handleLoad(name) {
     return;
   }
 
+  applyDesign(design, name);
+}
+
+/**
+ * Replace the current design with the given one
+ * @param {object} design - Design data as produced by serializeDesign()
+ * @param {string|null} name - Name to show for the design
+ */
+function applyDesign(design, name) {
   state.elements = design.elements || [];
   state.labelSize = design.labelSize || { width: 40, height: 30 };
   state.selectedIds = [];
@@ -8162,6 +8169,17 @@ function init() {
 
   // Initialize printer model prompt listeners
   initPrinterModelPrompt();
+
+  // Hook up the native (macOS app) document bridge when hosted in one
+  initNativeBridge({
+    serializeDesign,
+    applyDesign,
+    connectKnownPrinter: () => {
+      if (state.connectionType === 'ble' && !state.transport?.isConnected()) {
+        handleConnect();
+      }
+    },
+  });
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {

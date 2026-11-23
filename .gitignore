@@ -16,3 +16,7 @@ src/web/robots.txt
 src/web/screenshot.png
 src/web/google*.html
 archive/
+
+# macOS app build output
+macos/build/
+xcuserdata/

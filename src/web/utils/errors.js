@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Error Handling Utilities
  * Provides consistent error handling across the application

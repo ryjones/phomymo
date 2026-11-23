@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Application Constants
  * Single source of truth for all magic numbers and configuration

@@ -25,6 +25,25 @@ python3 -m http.server 8080
 
 **Requires:** Chrome, Edge, or another Chromium-based browser. Web Bluetooth is not available in Firefox or Safari. Android Chrome is supported with full touch UI; iOS is not supported. PM-241 printers require USB (WebUSB).
 
+## macOS App
+
+`macos/` holds a native Mac app that wraps the same designer in a document window, so labels are ordinary files: **File ▸ Open Recent**, Save / Save As / Revert, the unsaved-changes dot and close prompt, window tabs, and double-clicking a `.phomymo` file in Finder all work as they do in any Mac app.
+
+```bash
+cd macos
+xcodebuild -project Phomymo.xcodeproj -scheme Phomymo -configuration Release -derivedDataPath build build
+open build/Build/Products/Release/Phomymo.app
+```
+
+- `.phomymo` files are the same JSON that **Export** produces, so they import into the browser version and exported `.json` designs open in the app.
+- Bluetooth printing goes through CoreBluetooth (WebKit has no Web Bluetooth); macOS asks for Bluetooth permission on the first **Connect**.
+- USB printing (PM-241) is not available in the app yet - use the browser version for that.
+- Printers that have connected once are remembered. Each new window looks for them for a few seconds and reconnects without the chooser if one is on and in range. **Phomymo ▸ Forget Remembered Printers** clears the list.
+- Installed system fonts are always listed in the font menu; there is no "Add System Fonts" step.
+- The app works offline: the Tailwind, JsBarcode, qrcode, jsPDF and pdf.js scripts and the Google web fonts that the site loads from CDNs are bundled from `macos/vendor/`. After changing a library version in `src/web/index.html`, run `python3 macos/vendor/fetch.py` to refresh them (`--check` verifies the copies against `manifest.json`). The same script fetches each component's license text into `macos/vendor/LICENSES/` (summarised in `NOTICE.txt`), which ships inside the app.
+
+The macOS app (everything under `macos/` except `macos/vendor/`, plus `src/web/native.js`) is licensed under the Apache License 2.0; see `macos/LICENSE`. The bundled third-party libraries and fonts keep their own licenses, listed in `macos/vendor/LICENSES/NOTICE.txt`.
+
 ## Features
 
 **Design Elements** - Text (multiple fonts including local system fonts, sizes, styles, alignment, background colors), images with scale/aspect lock, barcodes (Code128, EAN-13, UPC-A, Code39), QR codes, and shapes (rectangle, ellipse, triangle, line) with solid, dithered grayscale, and stroke fills.

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Canvas rendering and raster conversion for Phomymo label designer
  * Supports multi-element rendering with transforms

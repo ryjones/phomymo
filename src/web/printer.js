@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * Printer protocol for Phomemo printers
  * Handles print commands for both USB and BLE transports

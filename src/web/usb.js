@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 /**
  * WebUSB transport for Phomymo
  */
