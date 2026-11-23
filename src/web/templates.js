@@ -66,7 +66,7 @@ export function substituteFields(elements, record) {
     const clone = { ...el };
 
     if (clone.text) {
-      clone.text = substituteString(clone.text, record);
+      clone.text = substituteText(clone.text, record);
     }
     if (clone.barcodeData) {
       clone.barcodeData = substituteString(clone.barcodeData, record);
@@ -91,6 +91,32 @@ function substituteString(str, record) {
     // Return the value if it exists, otherwise keep the placeholder
     return record.hasOwnProperty(trimmedField) ? record[trimmedField] : match;
   });
+}
+
+/**
+ * Substitute fields in multi-line text, dropping lines left blank by the data.
+ * A line made up only of {{field}} placeholders whose values are all missing
+ * or empty is removed, so a record with fewer address lines than the template
+ * leaves no gap and no literal placeholder. Blank lines typed into the
+ * template, and lines mixing placeholders with other text, are kept as is.
+ * @param {string} str - Text with {{field}} placeholders
+ * @param {Object} record - Object with field values
+ * @returns {string} - Text with substituted values
+ */
+function substituteText(str, record) {
+  return str
+    .split('\n')
+    .filter(line => {
+      FIELD_PATTERN.lastIndex = 0;
+      if (!FIELD_PATTERN.test(line)) return true;
+      const rest = line.replace(FIELD_PATTERN, (match, field) => {
+        const value = record[field.trim()];
+        return value === undefined || value === null ? '' : String(value);
+      });
+      return rest.trim() !== '';
+    })
+    .map(line => substituteString(line, record))
+    .join('\n');
 }
 
 /**
@@ -290,7 +316,7 @@ export function substituteFieldsByZone(elements, records, numZones) {
     const clone = { ...el };
 
     if (clone.text) {
-      clone.text = substituteString(clone.text, record);
+      clone.text = substituteText(clone.text, record);
     }
     if (clone.barcodeData) {
       clone.barcodeData = substituteString(clone.barcodeData, record);

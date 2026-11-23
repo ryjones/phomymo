@@ -64,7 +64,7 @@ import {
   createEmptyRecord,
   hasExpressions,
   evaluateExpressions,
-} from './templates.js?v=101';
+} from './templates.js?v=102';
 import {
   ZOOM,
   TEXT,
